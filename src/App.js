@@ -27,12 +27,16 @@ let initOptions = {
 //}
 
 let kc = new Keycloak(initOptions);
+//let kc = new Keycloak();
+//let kc = new Keycloak('./public/keycloak.json');
 
 kc.init({
   onLoad: initOptions.onLoad,
   KeycloakResponseType: 'code',
-  silentCheckSsoRedirectUri: window.location.origin + "/silent-check-sso.html", checkLoginIframe: false,
-  pkceMethod: 'S256'
+  silentCheckSsoRedirectUri: window.location.origin + "/silent-check-sso.html", 
+  checkLoginIframe: false,
+  pkceMethod: 'S256',
+  enableLogging: true
 }).then((auth) => {
   if (!auth) {
     window.location.reload();
@@ -47,6 +51,21 @@ kc.init({
 }, () => {
   console.error("Authenticated Failed");
 });
+
+// Perform Keycloak logout
+function logout() {
+  kc.logout( { redirectUri: 'http://localhost:3000/' } );
+}
+
+// Perform logout from Keycloak and external identity provider
+function logoutFromAll() {
+   // Redirect to Login.gov logout endpoint
+  window.location.replace("https://idp.int.identitysandbox.gov/openid_connect/logout"); // Example logout URL, replace with actual URL provided by Login.gov
+ // Logout from Keycloak
+ logout();
+
+}
+
 
 function App() {
 
@@ -72,7 +91,7 @@ function App() {
           <Button onClick={() => { setInfoMessage(JSON.stringify(kc.tokenParsed)) }} className="m-1" label='Show Parsed Access token' severity="info" />
           <Button onClick={() => { setInfoMessage(kc.isTokenExpired(5).toString()) }} className="m-1" label='Check Token expired' severity="warning" />
           <Button onClick={() => { kc.updateToken(10).then((refreshed)=>{ setInfoMessage('Token Refreshed: ' + refreshed.toString()) }, (e)=>{setInfoMessage('Refresh Error')}) }} className="m-1" label='Update Token (if about to expire)' />  {/** 10 seconds */}
-          <Button onClick={() => { kc.logout({ redirectUri: 'http://localhost:3000/' }) }} className="m-1" label='Logout' severity="danger" />
+          <Button onClick={() => { /* kc.logout({ redirectUri: 'http://localhost:3000/' */ logoutFromAll() }} className="m-1" label='Logout' severity="danger" />
           
         </div>
       </div>
