@@ -7,10 +7,12 @@ import { Button } from 'primereact/button';
 import { Card } from 'primereact/card';
 
 import Keycloak from 'keycloak-js';
-//import Keycloak from 'keycloak-connect';
+
+const malwarewebApp = window.location.protocol + '//' + window.location.host;
+const malwarewebAppUrlEncoded =  encodeURIComponent(malwarewebApp);
 
 let initOptions = {
-  url: 'http://localhost:8080/auth',
+  url: 'https://localhost:8443/auth',
   realm: 'MNG-TEST',
   clientId: 'react-client',
   onLoad: 'login-required', // check-sso | login-required
@@ -52,25 +54,39 @@ kc.init({
   console.error("Authenticated Failed");
 });
 
-// Perform Keycloak logout
-function logout() {
-  kc.logout( { redirectUri: 'http://localhost:3000/' } );
-}
+
 
 // Perform logout from Keycloak and external identity provider
 function logoutFromAll() {
-   // Redirect to Login.gov logout endpoint
-  window.location.replace("https://idp.int.identitysandbox.gov/openid_connect/logout"); // Example logout URL, replace with actual URL provided by Login.gov
- // Logout from Keycloak
- logout();
+  logoutFromLoginGov();
+  logoutFromKeycloak();
+}
+// Perform logout from Login.gov
+function logoutFromLoginGov() {
+  let logingovLogoutEndpt = "https://idp.int.identitysandbox.gov/openid_connect/logout?client_id=urn:gov:gsa:openidconnect.profiles:sp:sso:DHS:malware-nextgen-logout-test-fix" + "&post_logout_redirect_uri=" + malwarewebAppUrlEncoded; 
+  //let logingovLogoutEndpt = "https://idp.int.identitysandbox.gov/openid_connect/logout?client_id=urn:gov:gsa:openidconnect.profiles:sp:sso:DHS:malware-nextgen-logout-test-fix" + "&post_logout_redirect_uri=" + keycloakLogoutEndptUrlEncodedUrlEndcoded;
+  console.info("logout URL = " + logingovLogoutEndpt);
+  // is there an asynch issue here , need to wait for window.location.replace() to complete before issuing next? 
+  window.location.replace(logingovLogoutEndpt);
+}
 
+// Perform logout from Keycloak 
+function logoutFromKeycloak() {
+  console.info("logout using redirect_uri malwarewebAppUrlEncoded = " + malwarewebAppUrlEncoded);
+  let keycloakLogoutEndpt= "https://localhost:8443/auth/realms/MNG-TEST/protocol/openid-connect/logout?client_id=react-client&post_logout_redirect_uri=" + malwarewebAppUrlEncoded;
+  let keycloakLogoutEndptUrlEncoded = encodeURIComponent(keycloakLogoutEndpt);
+  console.info("keycloakLogoutEndptUrlEncoded = " + keycloakLogoutEndptUrlEncoded);
+  let keycloakLogoutEndptUrlEncodedUrlEndcoded = encodeURIComponent(keycloakLogoutEndptUrlEncoded);
+    
+  //kc.logout( { redirectUri: 'https://localhost:3000/' } );
+  console.info("logout using keycloakLogoutEndpt  = " + keycloakLogoutEndpt);
+  window.location.replace(keycloakLogoutEndpt);
 }
 
 
 function App() {
 
   const [infoMessage, setInfoMessage] = useState('');
-
   return (
     <div className="App">
       {/* <Auth /> */}
@@ -91,8 +107,10 @@ function App() {
           <Button onClick={() => { setInfoMessage(JSON.stringify(kc.tokenParsed)) }} className="m-1" label='Show Parsed Access token' severity="info" />
           <Button onClick={() => { setInfoMessage(kc.isTokenExpired(5).toString()) }} className="m-1" label='Check Token expired' severity="warning" />
           <Button onClick={() => { kc.updateToken(10).then((refreshed)=>{ setInfoMessage('Token Refreshed: ' + refreshed.toString()) }, (e)=>{setInfoMessage('Refresh Error')}) }} className="m-1" label='Update Token (if about to expire)' />  {/** 10 seconds */}
-          <Button onClick={() => { /* kc.logout({ redirectUri: 'http://localhost:3000/' */ logoutFromAll() }} className="m-1" label='Logout' severity="danger" />
-          
+          <Button onClick={() => { /* kc.logout({ redirectUri: 'http://localhost:3000/' */ logoutFromLoginGov() }} className="m-1" label='Logout Login.gov' severity="danger" />
+          <Button onClick={() => { /* kc.logout({ redirectUri: 'http://localhost:3000/' */ logoutFromKeycloak() }} className="m-1" label='Logout Keycloak' severity="danger" />
+          <Button onClick={() => { /* kc.logout({ redirectUri: 'http://localhost:3000/' */ logoutFromAll() }} className="m-1" label='Logout All' severity="danger" />
+
         </div>
       </div>
 
