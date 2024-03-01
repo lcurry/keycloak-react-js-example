@@ -48,3 +48,17 @@ To run the client application from a browser first run the command to serve the 
 Runs the app in the development mode. Then go to the URL connect:
 
     Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+
+When prompted to login, click the "login.gov" option on the login screen. 
+
+When app comes up (after successful login via login.gov) you can successfully logout completely by first clicking "Logout login.gov" and then click "Logout keycloak" 
+
+To demonstrate the issue with kc.logout(), click the "kc.logout()" button. 
+You will see error in browser :
+
+    Client client_id is missing
+    Id token hint This application is misconfigured and should not be sending id_token_hint. Please send client_id instead.
+
+This issue is being addressed with enhancement to upstream Keycloak 24 (to be released) here:
+https://github.com/keycloak/keycloak/pull/27295
+

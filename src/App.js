@@ -30,16 +30,12 @@ let initOptions = {
 //}
 
 let kc = new Keycloak(initOptions);
-//let kc = new Keycloak();
-//let kc = new Keycloak('./public/keycloak.json');
 
 kc.init({
   onLoad: initOptions.onLoad,
   KeycloakResponseType: 'code',
-  silentCheckSsoRedirectUri: window.location.origin + "/silent-check-sso.html", 
-  checkLoginIframe: false,
-  pkceMethod: 'S256',
-  enableLogging: true
+  silentCheckSsoRedirectUri: window.location.origin + "/silent-check-sso.html", checkLoginIframe: false,
+  pkceMethod: 'S256'
 }).then((auth) => {
   if (!auth) {
     window.location.reload();
@@ -112,7 +108,8 @@ function App() {
           <Button onClick={() => { kc.updateToken(10).then((refreshed)=>{ setInfoMessage('Token Refreshed: ' + refreshed.toString()) }, (e)=>{setInfoMessage('Refresh Error')}) }} className="m-1" label='Update Token (if about to expire)' />  {/** 10 seconds */}
           <Button onClick={() => { /* kc.logout({ redirectUri: 'http://localhost:3000/' */ logoutFromLoginGov() }} className="m-1" label='Logout Login.gov' severity="danger" />
           <Button onClick={() => { /* kc.logout({ redirectUri: 'http://localhost:3000/' */ logoutFromKeycloak() }} className="m-1" label='Logout Keycloak' severity="danger" />
-          <Button onClick={() => { kc.logout({ redirectUri: 'https://localhost:3000/'})  /* logoutFromAll() */ }} className="m-1" label='Logout All' severity="danger" />
+          <Button onClick={() => { /* kc.logout({ redirectUri: 'https://localhost:3000/' */  logoutFromAll()  }} className="m-1" label='Logout All' severity="danger" />
+          <Button onClick={() => {  kc.logout({ redirectUri: 'https://localhost:3000/' } ) }} className="m-1" label='kc.logout()' severity="danger" />
 
         </div>
       </div>
