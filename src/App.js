@@ -10,6 +10,7 @@ import Keycloak from 'keycloak-js';
 
 const malwarewebApp = window.location.protocol + '//' + window.location.host;
 const malwarewebAppUrlEncoded =  encodeURIComponent(malwarewebApp);
+const loginGovLogoutUrlEncoded = encodeURIComponent("https://idp.int.identitysandbox.gov/openid_connect/logout");
 
 let initOptions = {
   url: 'https://localhost:8443/auth',
@@ -72,12 +73,14 @@ function logoutFromLoginGov() {
 
 // Perform logout from Keycloak 
 function logoutFromKeycloak() {
+  // Attempt to combine keycloak/login.gov logout into one logout to keycloak 
+  //console.info("logout using redirect_uri loginGovLogoutUrlEncoded = " + loginGovLogoutUrlEncoded);
+  //let keycloakLogoutEndpt= "https://localhost:8443/auth/realms/MNG-TEST/protocol/openid-connect/logout?client_id=react-client&post_logout_redirect_uri=" + loginGovLogoutUrlEncoded;
   console.info("logout using redirect_uri malwarewebAppUrlEncoded = " + malwarewebAppUrlEncoded);
   let keycloakLogoutEndpt= "https://localhost:8443/auth/realms/MNG-TEST/protocol/openid-connect/logout?client_id=react-client&post_logout_redirect_uri=" + malwarewebAppUrlEncoded;
   let keycloakLogoutEndptUrlEncoded = encodeURIComponent(keycloakLogoutEndpt);
   console.info("keycloakLogoutEndptUrlEncoded = " + keycloakLogoutEndptUrlEncoded);
   let keycloakLogoutEndptUrlEncodedUrlEndcoded = encodeURIComponent(keycloakLogoutEndptUrlEncoded);
-    
   //kc.logout( { redirectUri: 'https://localhost:3000/' } );
   console.info("logout using keycloakLogoutEndpt  = " + keycloakLogoutEndpt);
   window.location.replace(keycloakLogoutEndpt);
@@ -109,7 +112,7 @@ function App() {
           <Button onClick={() => { kc.updateToken(10).then((refreshed)=>{ setInfoMessage('Token Refreshed: ' + refreshed.toString()) }, (e)=>{setInfoMessage('Refresh Error')}) }} className="m-1" label='Update Token (if about to expire)' />  {/** 10 seconds */}
           <Button onClick={() => { /* kc.logout({ redirectUri: 'http://localhost:3000/' */ logoutFromLoginGov() }} className="m-1" label='Logout Login.gov' severity="danger" />
           <Button onClick={() => { /* kc.logout({ redirectUri: 'http://localhost:3000/' */ logoutFromKeycloak() }} className="m-1" label='Logout Keycloak' severity="danger" />
-          <Button onClick={() => { /* kc.logout({ redirectUri: 'http://localhost:3000/' */ logoutFromAll() }} className="m-1" label='Logout All' severity="danger" />
+          <Button onClick={() => { kc.logout({ redirectUri: 'https://localhost:3000/'})  /* logoutFromAll() */ }} className="m-1" label='Logout All' severity="danger" />
 
         </div>
       </div>
