@@ -31,6 +31,9 @@ A recommended way to Import from URL the necessary configuration when creating t
     https://idp.int.identitysandbox.gov/.well-known/openid-configuration
 See documentation [here](https://developers.login.gov/oidc/getting-started/#auto-discovery )
 
+The Realm used for testing has been exported using a boot-time export of the realm (rather than from the admin console.) To import this realm 'MNG-TEST' you'd need to run command line import on startup of RH-SSO as described [here](https://access.redhat.com/documentation/en-us/red_hat_single_sign-on/7.6/html/server_administration_guide/assembly-exporting-importing_server_administration_guide)
+
+
 4. 
 NPM installed locally. With this repo cloned locally. Change directories to the root of this project. 
 
