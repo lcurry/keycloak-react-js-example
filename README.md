@@ -31,9 +31,18 @@ A recommended way to Import from URL the necessary configuration when creating t
     https://idp.int.identitysandbox.gov/.well-known/openid-configuration
 See documentation [here](https://developers.login.gov/oidc/getting-started/#auto-discovery )
 
+A shortcut would be to import the REALM provided here in this repo.  You'll need to stop rh-sso and run the following from the command line:
+
+bin/standalone.sh -Dkeycloak.migration.action=import -Dkeycloak.migration.provider=singleFile -Dkeycloak.migration.file=./MNG-TEST-realm.json -Dkeycloak.migration.strategy=OVERWRITE_EXISTING
+
 4. 
 NPM installed locally. With this repo cloned locally. Change directories to the root of this project. 
 
+5.
+Create self-signed certificate pair for running 
+
+ openssl req -x509 -newkey rsa:2048 -keyout key.pem -out cert.pem -days 365
+(Note these files referenced from 'package.json' and are necessary for running HTTPS)
 
 ### To run the demo 
 
@@ -47,4 +56,4 @@ To run the client application from a browser first run the command to serve the 
 
 Runs the app in the development mode. Then go to the URL connect:
 
-    Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+    Open [https://localhost:3000](https://localhost:3000) to view it in your browser.
