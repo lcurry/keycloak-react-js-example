@@ -10,7 +10,7 @@ import Keycloak from 'keycloak-js';
 //import Keycloak from 'keycloak-connect';
 
 let initOptions = {
-  url: 'http://localhost:8080/auth',
+  url: 'https://localhost:8443/auth',
   realm: 'MNG-TEST',
   clientId: 'react-client',
   onLoad: 'login-required', // check-sso | login-required
@@ -72,7 +72,7 @@ function App() {
           <Button onClick={() => { setInfoMessage(JSON.stringify(kc.tokenParsed)) }} className="m-1" label='Show Parsed Access token' severity="info" />
           <Button onClick={() => { setInfoMessage(kc.isTokenExpired(5).toString()) }} className="m-1" label='Check Token expired' severity="warning" />
           <Button onClick={() => { kc.updateToken(10).then((refreshed)=>{ setInfoMessage('Token Refreshed: ' + refreshed.toString()) }, (e)=>{setInfoMessage('Refresh Error')}) }} className="m-1" label='Update Token (if about to expire)' />  {/** 10 seconds */}
-          <Button onClick={() => { kc.logout({ redirectUri: 'http://localhost:3000/' }) }} className="m-1" label='Logout' severity="danger" />
+          <Button onClick={() => { kc.logout({ redirectUri: 'https://localhost:3000/' }) }} className="m-1" label='Logout' severity="danger" />
           
         </div>
       </div>
